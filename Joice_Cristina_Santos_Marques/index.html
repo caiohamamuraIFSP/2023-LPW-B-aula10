@@ -1,14 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<!-- The above code creates a table on an html page. It uses the "estilo.css" and "script.js" files to apply formatting and add functionality to the page. The table has three rows and three columns, each column being an empty td element. This creates a tic-tac-toe board for the user to interact with. -->
+<html lang="pt-br">
+  <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <canvas id="meu-quadro" width="500" height="500"></canvas>
-    <img id="logo-saopaulo" src="saopaulo.png" alt="" style="display:none;">
-    <script src="script.js"></script>
-</body>
+    <title>Jogo da Velha</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1 id="cabecalho">Jogando: <span id="jogador"></span></h1> 
+    <table id="quadro">
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+    <script src="java.js"></script>
+  </body>
 </html>
