@@ -1,105 +1,37 @@
-let cabecalho = document.getElementById('cabecalho');
-let mostradorJogador = document.getElementById('jogador');
-let jogadorAtual = 'X';
-let casas = document.getElementsByTagName('td');
-let jogadas = 0;
-let reini = document.getElementById('retro');
-let contVelha = 0;
+let canvas = document.getElementById('meu-quadro');
+let militao = document.getElementById('militao');
+let ctx = canvas.getContext('2d');
 
+canvas.height = window.innerHeight - 10;
+canvas.width = window.innerWidth;
 
-mostradorJogador.innerHTML = jogadorAtual;
+const RAIO_BOLA = 20;
 
-
-
-function mouseEncima() {
-    if (jogadorAtual == 'X') {
-        this.style.backgroundColor = "red"
-    }
-    else{
-        this.style.backgroundColor = "blue"
-    }
+function quadrado(x, y) {
+    ctx.drawImage(militao, x, y, 50, 50)
 }
 
-function mouseSaiu() {
-    this.style.backgroundColor = "white"
-    }
+let x = RAIO_BOLA;
+let y = RAIO_BOLA;
+let velX = 2;
+let velY = 2;
 
-for (const casa of casas) {
-  casa.onclick = jogar;
-  casa.addEventListener('mouseover', mouseEncima);
-  casa.addEventListener('mouseleave', mouseSaiu);
+function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    quadrado(x, y);
+    x += velX;
+    y += velY;
+
+    if (x > (canvas.width - RAIO_BOLA))
+        velX *= -1;
+    if (y > (canvas.height - RAIO_BOLA))
+        velY *= -1;
+    if (x < RAIO_BOLA)
+        velX *= -1;
+    if (y < RAIO_BOLA)
+        velY *= -1;
+
+    requestAnimationFrame(loop);
 }
 
-function jogar() {
-  reini.style.display = 'none'
-
-  jogadas++
-  if (this.innerHTML == '') {
-    this.innerHTML = jogadorAtual;
-    trocaTurno();
-    trocaJogador();
-    mostradorJogador.innerHTML = jogadorAtual;
-
-  }
-  
-
-}
-
-function trocaJogador() {
-  if (jogadorAtual === 'X') {
-    jogadorAtual = 'O';
-  } else {
-    jogadorAtual = 'X';
-  }
-}
-
-function trocaTurno() {
-  let ganhou = verificaFim();
-
-
-
-  if (ganhou) {
-    cabecalho.innerHTML = `${jogadorAtual} ganhou!`;
-    bloqueiaCelulas();
-  }
-  if (jogadas == 9 && casas != verificaFim){
-    cabecalho.innerHTML = `empate`;
-    bloqueiaCelulas();
-  }
-
-}
-
-function verificaFim() {
-
-  let verifica = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
-  for (const caso of verifica) {
-    if (casas[caso[0]].innerHTML == casas[caso[1]].innerHTML &&
-      casas[caso[0]].innerHTML == casas[caso[2]].innerHTML &&
-      casas[caso[0]].innerHTML != '')
-      return true
-  }
-  return false;
-}
-
-function bloqueiaCelulas() {
-  for (const casa of casas) {
-    casa.onclick = false;
-    reini.style.display = 'block'
-
-  }
-}
-  function reiniciar(){
-
-    for (const item of casas) {
-      item.innerHTML = ``;
-      
-      item.onclick = jogar
-      
-    }
-    jogadas = 0
-    cabecalho.innerHTML = 'Jogando: <span id="jogador"></span>';
-    mostradorJogador = document.getElementById('jogador');
-    mostradorJogador.innerHTML = "X";
-      
-   
-}
+requestAnimationFrame(loop);

@@ -1,102 +1,67 @@
-let cabecalho = document.getElementById('cabecalho');
-let mostradorJogador = document.getElementById('jogador');
-let jogadorAtual = 'X';
-let casas = document.getElementsByTagName('td');
-let reinicar = document.getElementById('reiniciar')
-reinicar.style.display = 'none'
-let contVelha;
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var raf;
+var running = false;
 
-let jogX = document.getElementById('pontoX');
-let jogO = document.getElementById('pontoO');
-let contX = 0;
-let contO = 0;
-jogX.innerHTML = `Jogador X: ${contX}`;
-jogO.innerHTML = `Jogador O: ${contO}`;
-// Grid de casas
-// 0 1 2
-// 3 4 5
-// 6 7 8
+canvas.height = window.innerHeight - 10;
+canvas.width = window.innerWidth;
 
-// Liga todas as células na função jogar
-for (const casa of casas) {
-  casa.onclick = jogar;
-}
-
-refresh();
-
-function jogar() {  
-  // TODO: verificar se o quadro já não está preenchido!
-    if(this.textContent != '')
-        return;
-  // Coloca o conteúdo na célula atual
-  document.onkeyup = false;
-  this.textContent = jogadorAtual;
-  trocaTurno();
-  trocaJogador();
-  mostradorJogador.innerHTML = jogadorAtual;
-}
-
-function trocaJogador() {
-  if (jogadorAtual === 'X') {
-    jogadorAtual = 'O';
-  } else {
-    jogadorAtual = 'X';
+var ball = {
+  x: 100,
+  y: 100,
+  vx: 5,
+  vy: 1,
+  radius: 25,
+  color: 'blue',
+  draw: function() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.fillStyle = this.color;
+    ctx.fill();
   }
+};
+
+function clear() {
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
 }
 
-function trocaTurno() {
+function draw() {
+  clear();
+  ball.draw();
+  ball.x += ball.vx;
+  ball.y += ball.vy;
 
-  let ganhou = verificaFim();
-  if (ganhou) {
-    cabecalho.innerHTML = `${jogadorAtual} ganhou!`;
-    bloqueiaCelulas();
-    if(jogadorAtual === 'X')
-      contX++;
-    else
-      contO++;
-    jogX.innerHTML = `Jogador X: ${contX}`;
-    jogO.innerHTML = `Jogador O: ${contO}`;
-  } else
-      verificaVelha()
-}
-
-function verificaFim() {
-    let posGanha = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[6,4,2]];
-    for(i of posGanha) {
-        if(casas[i[0]].innerHTML == casas[i[1]].innerHTML && casas[i[1]].innerHTML == casas[i[2]].innerHTML && casas[i[1]].innerHTML !== '')
-          return true;
+  if (ball.y + ball.vy > canvas.height || ball.y + ball.vy < 0) {
+    ball.vy = -ball.vy;
   }
-  return false;
+  if (ball.x + ball.vx > canvas.width || ball.x + ball.vx < 0) {
+    ball.vx = -ball.vx;
+  }
+
+  raf = window.requestAnimationFrame(draw);
 }
 
-function bloqueiaCelulas() {
-  if(verificaFim()) {
-      for(i of casas) {
-        i.onclick = false
-      }
-      reinicar.style.display = 'block'
-      document.onkeyup = refresh;
+canvas.addEventListener('mousemove', function(e) {
+  if (!running) {
+    clear();
+    ball.x = e.clientX;
+    ball.y = e.clientY;
+    ball.draw();
   }
-}
-function verificaVelha() {
-  contVelha = 0;
-  for(i of casas) {
-    if(i.textContent != ''){
-      contVelha++
-    }
+});
+
+canvas.addEventListener('click', function(e) {
+  if (!running) {
+    raf = window.requestAnimationFrame(draw);
+    running = true;
   }
-  if(contVelha == 9) {
-    alert("Deu velha")
-    reinicar.style.display = 'block'
-  }
-}
-function refresh() {
-  for(i of casas) {
-    i.textContent = '';
-    i.onclick = jogar;
-    cabecalho.innerHTML = 'Jogando: <span id="jogador"></span>'
-    mostradorJogador = document.getElementById('jogador');
-    mostradorJogador.innerHTML = jogadorAtual;
-}
-  reinicar.style.display = 'none';
-}
+});
+
+canvas.addEventListener('mouseout', function(e) {
+  window.cancelAnimationFrame(raf);
+  running = false;
+});
+
+ball.draw();
